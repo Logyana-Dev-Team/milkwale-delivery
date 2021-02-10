@@ -11,6 +11,7 @@ import SelectAddress from './SelectAddress'
 import CheckoutScreen from './CheckoutScreen'
 import SubscribeCheckout from './SubscribeCheckout'
 import OrderDeliveredScreen from './OrderDeliveredScreen'
+import OrderCancelled from './OrderCancelled'
 import OrderDetailsScreen from './OrderDetailsScreen'
 import SubsDetailsScreen from './SubsDetailsScreen'
 
@@ -35,4 +36,5 @@ export {
     TestScreen,
     OrderDetailsScreen,
     SubsDetailsScreen,
+    OrderCancelled
 }

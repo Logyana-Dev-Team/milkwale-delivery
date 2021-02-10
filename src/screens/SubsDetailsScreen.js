@@ -28,8 +28,8 @@ const SubsDetailsScreen = (props) => {
       >
         <View
           style={{
-            width: SIZES.width,
-            height: SIZES.height * 0.3,
+            width: '100%',
+            height: '35%',
             backgroundColor: COLORS.primary,
             flexDirection: "column",
             justifyContent: "flex-start",
@@ -37,25 +37,25 @@ const SubsDetailsScreen = (props) => {
           }}
         >
           <View>
-            <Text style={{ fontSize: 20, color: COLORS.white, margin: 10 }}>
+            <Text style={{ fontSize: 24, color: COLORS.white,fontWeight:'bold', margin: 10 }}>
               Reason for Cancellation
             </Text>
           </View>
           <View
             style={{
-              width: SIZES.width - 20,
+              width: '90%',
+              height:'40%',
               //   borderBottomColor: "gray",
               tintColor: "black",
-              height: SIZES.height,
+            //   height: SIZES.height,
+              margin:10
             }}
           >
             <TextInput
               //   label="Your answer..."
               value={text}
               onChangeText={(text) => setText(text)}
-              editable
-              underlineColor="black"
-              selectionColor="black"
+              selectionColor="red"
               multiline
               numberOfLines={5}
             />
@@ -70,17 +70,18 @@ const SubsDetailsScreen = (props) => {
               alignItems: "center",
               width: "50%",
               margin: 10,
-              position: "absolute",
-              bottom: 15,
+             
             }}
-            onPress={toggleModal}
+            onPress={()=>{toggleModal()
+            props.navigation.navigate('OrderCancelled')
+            }}
           >
             <Text
               style={{
-                paddingVertical: 5,
+                paddingVertical: 10,
                 paddingHorizontal: 20,
-                color: COLORS.darkGray,
-                fontSize: 17,
+                color: COLORS.primary,
+                fontSize: 18,
               }}
             >
               Submit & Cancel
@@ -289,7 +290,7 @@ const SubsDetailsScreen = (props) => {
             </View>
           </View>
         </ScrollView>
-        {ModalTester()}
+      
         <View
           style={{
             flexDirection: "row",
@@ -306,8 +307,8 @@ const SubsDetailsScreen = (props) => {
             style={{
               backgroundColor: COLORS.primary,
               borderRadius: 10,
-              borderColor: COLORS.darkGray,
-              borderWidth: 0.5,
+            //   borderColor: COLORS.darkGray,
+            //   borderWidth: 0.5,
             }}
             onPress={toggleModal}
           >
@@ -328,7 +329,7 @@ const SubsDetailsScreen = (props) => {
           <TouchableOpacity
             style={{
               backgroundColor: COLORS.primary,
-              borderWidth: 0.5,
+            //   borderWidth: 0.5,
               borderRadius: 10,
               flexDirection: "row",
               justifyContent: "center",
@@ -371,6 +372,7 @@ const SubsDetailsScreen = (props) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {Header()}
+      {ModalTester()}
 
       {Body()}
     </SafeAreaView>

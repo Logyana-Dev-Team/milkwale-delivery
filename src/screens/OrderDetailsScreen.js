@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import {
   View,
   Text,
@@ -7,10 +7,91 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { TextInput } from "react-native-paper";
 import Separator from "../common/Separator";
+import Modal from "react-native-modal";
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
 
 const OrderDetailsScreen = (props) => {
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [text, setText] = useState("");
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  function ModalTester() {
+    return (
+      <Modal
+        isVisible={isModalVisible}
+        onBackdropPress={() => setModalVisible(false)}
+      >
+        <View
+          style={{
+            width: '100%',
+            height: '35%',
+            backgroundColor: COLORS.primary,
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "center",
+          }}
+        >
+          <View>
+            <Text style={{ fontSize: 24, color: COLORS.white,fontWeight:'bold', margin: 10 }}>
+              Reason for Cancellation
+            </Text>
+          </View>
+          <View
+            style={{
+              width: '90%',
+              height:'40%',
+              //   borderBottomColor: "gray",
+              tintColor: "black",
+            //   height: SIZES.height,
+              margin:10
+            }}
+          >
+            <TextInput
+              //   label="Your answer..."
+              value={text}
+              onChangeText={(text) => setText(text)}
+              selectionColor="red"
+              multiline
+              numberOfLines={5}
+            />
+          </View>
+          <TouchableOpacity
+            style={{
+              backgroundColor: COLORS.white,
+              //   borderWidth: 0.5,
+              borderRadius: 5,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "50%",
+              margin: 10,
+             
+            }}
+            onPress={()=>{toggleModal()
+              props.navigation.navigate('OrderCancelled')
+              }}
+          >
+            <Text
+              style={{
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                color: COLORS.primary,
+                fontSize: 18,
+              }}
+            >
+              Submit & Cancel
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
+  }
+
   const Header = () => {
     return (
       <View
@@ -287,6 +368,7 @@ const OrderDetailsScreen = (props) => {
 
                 //   fontWeight: "bold",
               }}
+              onPress={toggleModal}
             >
               Cancel
             </Text>
@@ -332,6 +414,7 @@ const OrderDetailsScreen = (props) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {Header()}
+      {ModalTester()}
       {Body()}
     </SafeAreaView>
   );
