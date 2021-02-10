@@ -78,11 +78,11 @@ const MyAccountScreen = (props) => {
                 flexDirection: "row",
                 justifyContent: "center",
                 alignItems: "center",
-                borderRadius: 50,
+                // borderRadius: 50,
               }}
             >
               <Image
-                source={images.milk2}
+                source={images.galgadot}
                 style={{ width: 130, height: 130, borderRadius: 65 }}
                 resizeMode="cover"
               />

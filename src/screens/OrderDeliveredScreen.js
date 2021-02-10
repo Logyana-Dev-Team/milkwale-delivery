@@ -43,7 +43,7 @@ const OrderDeliveredScreen = (props) => {
         />
         <TouchableOpacity
           onPress={() => {
-            props.navigation.navigate("Tabs");
+            props.navigation.navigate("TopTabNavigator");
           }}
           style={{
             backgroundColor: COLORS.primary,

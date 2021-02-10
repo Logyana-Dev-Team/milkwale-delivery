@@ -11,9 +11,11 @@ import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
 import OrderItem from "./OrderItem";
 import OrderTotal from "./OrderTotal";
 import SubItem from "./SubItem";
-const SubCard = () => {
+const SubCard = (props) => {
   return (
-    <TouchableOpacity style={{ backgroundColor: "white" }}>
+    <TouchableOpacity style={{ backgroundColor: "white" }} onPress={()=>{
+      props.navigation.navigate("SubsDetailsScreen")
+    }}>
       <View
         style={{
           marginHorizontal: 20,

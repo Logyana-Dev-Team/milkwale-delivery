@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
-  OrderDeliveredScreen,
+  OrderDeliveredScreen, OrderDetailsScreen, SubsDetailsScreen,
 } from "../screens";
 import TopTabNavigator from "./TopTabNavigator";
 
@@ -17,6 +17,14 @@ const HomeStackNavigator = ({navigation}) => {
       <Stack.Screen name="LoginScreen" component={LoginScreen} /> */}
 
       <Stack.Screen name="TopTabNavigator" component={TopTabNavigator} />
+      <Stack.Screen
+        name="OrderDetailsScreen"
+        component={OrderDetailsScreen}
+      />
+      <Stack.Screen
+        name="SubsDetailsScreen"
+        component={SubsDetailsScreen}
+      />
       <Stack.Screen
         name="OrderDeliveredScreen"
         component={OrderDeliveredScreen}

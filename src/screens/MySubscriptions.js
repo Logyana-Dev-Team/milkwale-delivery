@@ -16,10 +16,10 @@ const MySubscriptions = (props) => {
     return (
       <View
         style={{
-          backgroundColor: COLORS.primary,
-          padding: 20,
+          backgroundColor: COLORS.white,
+          padding: 10,
           flexDirection: "row",
-          justifyContent: "center",
+          justifyContent: "flex-start",
           alignItems: "center",
         }}
       >
@@ -35,10 +35,10 @@ const MySubscriptions = (props) => {
 
         <Text
           style={{
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: "bold",
             marginHorizontal: 15,
-            color: COLORS.black,
+            color: COLORS.darkGray,
           }}
         >
           My Subscriptions
@@ -56,10 +56,10 @@ const MySubscriptions = (props) => {
             flex: 1,
             // paddingTop: 20,
             paddingBottom: 40,
-            marginBottom: 50,
+            // marginBottom: 50,
           }}
         >
-          <SubCard />
+          <SubCard navigation={props.navigation}/>
           <SubCard />
           <SubCard />
           <SubCard />
@@ -72,7 +72,7 @@ const MySubscriptions = (props) => {
   };
   return (
     <>
-      {/* {Header()} */}
+      {Header()}
       {Body()}
       {/* <View style={{ flex: 1,padding:5 }}>
         <View

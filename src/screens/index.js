@@ -11,6 +11,9 @@ import SelectAddress from './SelectAddress'
 import CheckoutScreen from './CheckoutScreen'
 import SubscribeCheckout from './SubscribeCheckout'
 import OrderDeliveredScreen from './OrderDeliveredScreen'
+import OrderDetailsScreen from './OrderDetailsScreen'
+import SubsDetailsScreen from './SubsDetailsScreen'
+
 import NotificationScreen from './NotificationScreen'
 import TestScreen from './TestScreen'
 
@@ -29,5 +32,7 @@ export {
     OrderDeliveredScreen,
     NotificationScreen,
     SubscribeCheckout,
-    TestScreen
+    TestScreen,
+    OrderDetailsScreen,
+    SubsDetailsScreen,
 }

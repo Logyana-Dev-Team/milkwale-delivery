@@ -12,7 +12,7 @@ import {
 
 import { icons, images, SIZES, COLORS, FONTS } from "../constants";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import {MyAccountScreen, MyOrdersScreen,MySubscriptions } from "../screens";
+import {MyAccountScreen, MyOrdersScreen,MySubscriptions, OrderDetailsScreen } from "../screens";
 
 const Tab = createMaterialTopTabNavigator();
 

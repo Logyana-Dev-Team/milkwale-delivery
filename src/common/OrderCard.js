@@ -10,9 +10,11 @@ import {
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
 import OrderItem from "./OrderItem";
 import OrderTotal from "./OrderTotal";
-const OrderCard = () => {
+const OrderCard = (props) => {
   return (
-    <TouchableOpacity style={{ backgroundColor: "white" }}>
+    <TouchableOpacity style={{ backgroundColor: "white" }} onPress={()=>{
+      props.navigation.navigate("OrderDetailsScreen")
+    }}>
       <View
         style={{
           marginHorizontal: 20,
