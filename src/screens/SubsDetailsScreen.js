@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,13 +11,34 @@ import { TextInput } from "react-native-paper";
 import Separator from "../common/Separator";
 import Modal from "react-native-modal";
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
+import { Axiosapi } from "../../App";
 
 const SubsDetailsScreen = (props) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [text, setText] = useState("");
+  const [orderCredit, setOrderCredit] = useState("");
+  const [addressData, setAddressData] = useState("");
+  const [data, setData] = useState(route.params.data);
+
+  useEffect(() => {
+    Axiosapi.post(`/api/address/getSingleAddress`, {
+      addressId: data.address,
+      userId: data.user._id,
+    })
+      .then((res) => setAddressData(res.data.getAddr))
+      .catch((err) => console.log(err));
+  }, []);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+
+  const completeOrder = () => {
+    Axiosapi.post(`/api/order/update-order`, {
+     
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
   };
 
   function ModalTester() {
@@ -28,8 +49,8 @@ const SubsDetailsScreen = (props) => {
       >
         <View
           style={{
-            width: '100%',
-            height: '35%',
+            width: "100%",
+            height: "35%",
             backgroundColor: COLORS.primary,
             flexDirection: "column",
             justifyContent: "flex-start",
@@ -37,18 +58,25 @@ const SubsDetailsScreen = (props) => {
           }}
         >
           <View>
-            <Text style={{ fontSize: 24, color: COLORS.white,fontWeight:'bold', margin: 10 }}>
+            <Text
+              style={{
+                fontSize: 24,
+                color: COLORS.white,
+                fontWeight: "bold",
+                margin: 10,
+              }}
+            >
               Reason for Cancellation
             </Text>
           </View>
           <View
             style={{
-              width: '90%',
-              height:'40%',
+              width: "90%",
+              height: "40%",
               //   borderBottomColor: "gray",
               tintColor: "black",
-            //   height: SIZES.height,
-              margin:10
+              //   height: SIZES.height,
+              margin: 10,
             }}
           >
             <TextInput
@@ -70,10 +98,10 @@ const SubsDetailsScreen = (props) => {
               alignItems: "center",
               width: "50%",
               margin: 10,
-             
             }}
-            onPress={()=>{toggleModal()
-            props.navigation.navigate('OrderCancelled')
+            onPress={() => {
+              toggleModal();
+              props.navigation.navigate("OrderCancelled");
             }}
           >
             <Text
@@ -242,7 +270,23 @@ const SubsDetailsScreen = (props) => {
               </Text>
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>24</Text>
             </View>
-
+            <View
+              style={{
+                width: "90%",
+                height: "10%",
+                //   borderBottomColor: "gray",
+                tintColor: "black",
+                //   height: SIZES.height,
+                margin: 10,
+              }}
+            >
+              <TextInput
+                //   label="Your answer..."
+                value={orderCredit}
+                onChangeText={(text) => setOrderCredit(text)}
+                selectionColor="red"
+              />
+            </View>
             <View
               style={{
                 marginHorizontal: 10,
@@ -275,22 +319,24 @@ const SubsDetailsScreen = (props) => {
                 </Text>
               </View>
 
-              <View>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    marginVertical: 5,
-                    marginHorizontal: 5,
-                  }}
-                >
-                  Lifeville, Pk chowk, BRT road, Pimple Saudagar, Pune,
-                  Maharashtra 411027
-                </Text>
-              </View>
+              {addressData ? (
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      marginVertical: 5,
+                      marginHorizontal: 5,
+                    }}
+                  >
+                    {addressData.houseNo}, {addressData.areaName},{" "}
+                    {addressData.landmark}, {addressData.pincode}
+                  </Text>
+                </View>
+              ) : null}
             </View>
           </View>
         </ScrollView>
-      
+
         <View
           style={{
             flexDirection: "row",
@@ -307,8 +353,8 @@ const SubsDetailsScreen = (props) => {
             style={{
               backgroundColor: COLORS.primary,
               borderRadius: 10,
-            //   borderColor: COLORS.darkGray,
-            //   borderWidth: 0.5,
+              //   borderColor: COLORS.darkGray,
+              //   borderWidth: 0.5,
             }}
             onPress={toggleModal}
           >
@@ -329,13 +375,14 @@ const SubsDetailsScreen = (props) => {
           <TouchableOpacity
             style={{
               backgroundColor: COLORS.primary,
-            //   borderWidth: 0.5,
+              //   borderWidth: 0.5,
               borderRadius: 10,
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
             }}
             onPress={() => {
+              completeOrder();
               props.navigation.navigate("OrderDeliveredScreen");
             }}
           >

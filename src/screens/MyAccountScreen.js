@@ -1,16 +1,43 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   SafeAreaView,
   Image,
+  TextInput,
+  StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
 import Separator from "../common/Separator";
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
 
+import AsyncStorage from "@react-native-community/async-storage";
+import { Axiosapi } from "../../App";
+
 const MyAccountScreen = (props) => {
+  useEffect(() => {
+    const _retrieveData = async () => {
+      try {
+        const id = await AsyncStorage.getItem("userId");
+        // console.log(id)
+        if (id !== null) {
+          // We have data!!
+          // console.log(id);
+          Axiosapi.post(`/api/delboy/single-delboy`, { uId: id }).then(
+            (res) => {
+              console.log(res.data.Delboy);
+              setName(res.data.Delboy.delname);
+              setNumber(res.data.Delboy.delphone);
+            }
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    _retrieveData();
+  }, []);
+
   const Header = () => {
     return (
       <>
@@ -70,7 +97,8 @@ const MyAccountScreen = (props) => {
               width: SIZES.width,
               justifyContent: "center",
               alignItems: "center",
-              borderBottomLeftRadius: 50, borderBottomRightRadius: 50,
+              borderBottomLeftRadius: 50,
+              borderBottomRightRadius: 50,
             }}
           >
             <View
@@ -114,7 +142,7 @@ const MyAccountScreen = (props) => {
                 color: COLORS.darkGray,
               }}
             >
-              Madhu Sharma
+              {name}
             </Text>
             {/* <Text style={{ margin: 5, fontSize: 22, color: "#008080" }}>
               Credits left : 12
@@ -155,11 +183,11 @@ const MyAccountScreen = (props) => {
                 color: COLORS.darkGray,
               }}
             >
-              +91 7923892389
+              +91 {number}
             </Text>
           </View>
           <Separator />
-          <View
+          {/* <View
             style={{
               flexDirection: "row",
               justifyContent: "flex-start",
@@ -184,9 +212,9 @@ const MyAccountScreen = (props) => {
             >
               Kothrud, Pune
             </Text>
-          </View>
+          </View> */}
           <Separator />
-          <View
+          {/* <View
             style={{
               flexDirection: "row",
               justifyContent: "flex-start",
@@ -211,7 +239,7 @@ const MyAccountScreen = (props) => {
             >
               abscee@gmail.com
             </Text>
-          </View>
+          </View> */}
           <Separator />
         </View>
       </>
