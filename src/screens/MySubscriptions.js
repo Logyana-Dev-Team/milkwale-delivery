@@ -13,9 +13,10 @@ import {
 } from "react-native";
 import { Axiosapi } from "../../App";
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
+import { userId } from "../../App";
 
 const MySubscriptions = ({ navigation, route }) => {
-  const [userId, setUserId] = useState("");
+  // const [userId, setUserId] = useState("");
   const [loading, setloading] = useState(false);
   const [allSubscriptions, setAllSubscriptions] = useState([]);
 
@@ -23,14 +24,14 @@ const MySubscriptions = ({ navigation, route }) => {
     React.useCallback(() => {
       const _retrieveData = async () => {
         try {
-          const id = await AsyncStorage.getItem("userId");
-          setUserId(id);
+          // const id = await AsyncStorage.getItem("userId");
+          // setUserId(id);
 
-          if (id !== null) {
+          if (userId !== null) {
             Axiosapi.post(`/api/delboy/single-delboy`, {
-              uId: id,
+              uId: userId,
             }).then((res) => {
-              
+              // console.log(res.data.Delboy.delCurrentSubOrders);
               setAllSubscriptions(res.data.Delboy.delCurrentSubOrders);
             });
           }
@@ -42,6 +43,36 @@ const MySubscriptions = ({ navigation, route }) => {
     }, [])
   );
 
+  const statusNow = (action) => {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "flex-end",
+          backgroundColor:
+            action === "Delivered"
+              ? COLORS.success
+              : action === "Not processed"
+              ? "blue"
+              : action === "Cancelled"
+              ? COLORS.danger
+              : COLORS.warning,
+          borderRadius: 10,
+        }}
+      >
+        <Text
+          style={{
+            color: "white",
+            fontWeight: "bold",
+            fontSize: 14,
+            margin: 5,
+          }}
+        >
+          {action}
+        </Text>
+      </View>
+    );
+  };
   const Header = () => {
     return (
       <View
@@ -85,8 +116,8 @@ const MySubscriptions = ({ navigation, route }) => {
                   <TouchableOpacity
                     style={{ backgroundColor: "white" }}
                     onPress={() => {
-                      navigation.navigate("SubsDetailsScreen",{
-                        data:item
+                      navigation.navigate("SubsDetailsScreen", {
+                        data: item.orderId,
                       });
                     }}
                   >
@@ -109,6 +140,9 @@ const MySubscriptions = ({ navigation, route }) => {
                         />
                       </View>
                       <View style={{ flex: 1 }}>
+                      <View style={{ width: "30%", alignSelf: "flex-end" }}>
+                          {statusNow(item.orderId.status)}
+                        </View>
                         <View
                           style={{
                             marginLeft: 30,
@@ -146,7 +180,7 @@ const MySubscriptions = ({ navigation, route }) => {
                                   fontWeight: "bold",
                                 }}
                               >
-                                {item.package}
+                                {item.orderId.package}
                               </Text>
                             </View>
                           </View>
@@ -165,7 +199,7 @@ const MySubscriptions = ({ navigation, route }) => {
                               }}
                             >
                               {" "}
-                              Product Name :
+                              Product Id :
                             </Text>
                             <View
                               style={{
@@ -182,7 +216,7 @@ const MySubscriptions = ({ navigation, route }) => {
                                   fontWeight: "bold",
                                 }}
                               >
-                                {item.subscriptionProduct.subId.pName}
+                                {item.orderId.subscriptionProduct.subId.pName}
                               </Text>
                             </View>
                           </View>
@@ -217,7 +251,7 @@ const MySubscriptions = ({ navigation, route }) => {
                                   fontWeight: "bold",
                                 }}
                               >
-                                {item.credits}
+                                {item.orderId.credits}
                               </Text>
                             </View>
                           </View>

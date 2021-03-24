@@ -9,6 +9,9 @@ export const COLORS = {
   skyblue:'#87CEFA', // sky blue
 
   // colors
+  success:'#28a745',
+  danger:'#dc3545',
+  warning:'#ffc107',
   black: "#1E1F20",
   white: "#FFFFFF",
   bg: "#f0f0f0",

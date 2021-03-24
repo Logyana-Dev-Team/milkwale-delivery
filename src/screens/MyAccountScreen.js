@@ -12,25 +12,29 @@ import Separator from "../common/Separator";
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
 
 import AsyncStorage from "@react-native-community/async-storage";
-import { Axiosapi } from "../../App";
+import { Axiosapi,userId } from "../../App";
 
 const MyAccountScreen = (props) => {
+
+const [name, setName] = useState("")
+const [number, setNumber] = useState("")
+
   useEffect(() => {
     const _retrieveData = async () => {
       try {
-        const id = await AsyncStorage.getItem("userId");
+        // const id = await AsyncStorage.getItem("userId");
         // console.log(id)
-        if (id !== null) {
+     
           // We have data!!
           // console.log(id);
-          Axiosapi.post(`/api/delboy/single-delboy`, { uId: id }).then(
+          Axiosapi.post(`/api/delboy/single-delboy`, { uId: userId }).then(
             (res) => {
-              console.log(res.data.Delboy);
+              // console.log(res.data.Delboy);
               setName(res.data.Delboy.delname);
               setNumber(res.data.Delboy.delphone);
             }
           );
-        }
+     
       } catch (error) {
         console.log(error);
       }
@@ -186,7 +190,7 @@ const MyAccountScreen = (props) => {
               +91 {number}
             </Text>
           </View>
-          <Separator />
+          {/* <Separator /> */}
           {/* <View
             style={{
               flexDirection: "row",
@@ -213,7 +217,7 @@ const MyAccountScreen = (props) => {
               Kothrud, Pune
             </Text>
           </View> */}
-          <Separator />
+          {/* <Separator /> */}
           {/* <View
             style={{
               flexDirection: "row",

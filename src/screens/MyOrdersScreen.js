@@ -11,11 +11,11 @@ import {
   Alert,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { Axiosapi } from "../../App";
+import { Axiosapi, userId } from "../../App";
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
 
-const MyOrdersScreen = ({navigation,route}) => {
-  const [userId, setUserId] = useState("");
+const MyOrdersScreen = ({ navigation, route }) => {
+  // const [userId, setUserId] = useState("");
   const [loading, setloading] = useState(false);
   const [allOrders, setAllOrders] = useState([]);
 
@@ -23,15 +23,16 @@ const MyOrdersScreen = ({navigation,route}) => {
     React.useCallback(() => {
       const _retrieveData = async () => {
         try {
-          const id = await AsyncStorage.getItem("userId");
-          setUserId(id);
+          // const id = await AsyncStorage.getItem("userId");
+          // setUserId(id);
 
-          if (id !== null) {
-            Axiosapi.post(`/api/delboy/single-delboy`, { uId: id }).then(
-              (res) => {
-                setAllOrders(res.data.Delboy.delCurrentOrders);
-              }
-            );
+          if (userId !== null) {
+            Axiosapi.post(`/api/delboy/single-delboy`, {
+              uId: userId,
+            }).then((res) => {
+              console.log(res.data.Delboy.delCurrentOrders);
+              setAllOrders(res.data.Delboy.delCurrentOrders);
+            });
           }
         } catch (error) {
           console.log(error);
@@ -41,27 +42,58 @@ const MyOrdersScreen = ({navigation,route}) => {
     }, [])
   );
 
-  const Header = () => {
+  // const Header = () => {
+  //   return (
+  //     <View
+  //       style={{
+  //         backgroundColor: COLORS.primary,
+  //         padding: 20,
+  //         flexDirection: "row",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //       }}
+  //     >
+
+  //       <Text
+  //         style={{
+  //           fontSize: 24,
+  //           fontWeight: "bold",
+  //           marginHorizontal: 15,
+  //           color: COLORS.black,
+  //         }}
+  //       >
+  //         My orders
+  //       </Text>
+  //     </View>
+  //   );
+  // };
+
+  const statusNow = (action) => {
     return (
       <View
         style={{
-          backgroundColor: COLORS.primary,
-          padding: 20,
           flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: "flex-end",
+          backgroundColor:
+            action === "Delivered"
+              ? COLORS.success
+              : action === "Not processed"
+              ? "blue"
+              : action === "Cancelled"
+              ? COLORS.danger
+              : COLORS.warning,
+          borderRadius: 10,
         }}
       >
-
         <Text
           style={{
-            fontSize: 24,
+            color: "white",
             fontWeight: "bold",
-            marginHorizontal: 15,
-            color: COLORS.black,
+            fontSize: 14,
+            margin: 5,
           }}
         >
-          My orders
+          {action}
         </Text>
       </View>
     );
@@ -86,7 +118,7 @@ const MyOrdersScreen = ({navigation,route}) => {
                     style={{ backgroundColor: "#f5f5f5" }}
                     onPress={() => {
                       navigation.navigate("OrderDetailsScreen", {
-                        data: item,
+                        data: item.orderId,
                       });
                     }}
                   >
@@ -108,7 +140,11 @@ const MyOrdersScreen = ({navigation,route}) => {
                           style={{ height: 100, width: 100, borderRadius: 15 }}
                         />
                       </View>
+
                       <View style={{ flex: 1 }}>
+                        <View style={{ width: "30%", alignSelf: "flex-end" }}>
+                          {statusNow(item.orderId.status)}
+                        </View>
                         <View style={{ marginLeft: 30, paddingHorizontal: 10 }}>
                           <View
                             style={{
@@ -135,8 +171,8 @@ const MyOrdersScreen = ({navigation,route}) => {
                               Quantity
                             </Text>
                           </View>
-                     
-                          {item.allProduct.map((item, index) => {
+
+                          {item.orderId.allProduct.map((item, index) => {
                             return (
                               <View
                                 key={index}
@@ -213,7 +249,7 @@ const MyOrdersScreen = ({navigation,route}) => {
                                 color: "#404040",
                               }}
                             >
-                              Rs.{item.amount}
+                              Rs.{item.orderId.amount}
                             </Text>
                           </View>
                         </View>
@@ -223,18 +259,13 @@ const MyOrdersScreen = ({navigation,route}) => {
                             flexDirection: "row",
                             justifyContent: "flex-end",
                           }}
-                        >
-                       
-                        </View>
+                        ></View>
                       </View>
                     </View>
-                   
                   </TouchableOpacity>
                 </View>
               );
             })}
-
-       
         </ScrollView>
       </View>
     );
@@ -242,9 +273,7 @@ const MyOrdersScreen = ({navigation,route}) => {
   return loading ? (
     <ActivityIndicator color="black" size="large" />
   ) : (
-    <SafeAreaView style={{ flex: 1 }}>
-      {Body()}
-    </SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>{Body()}</SafeAreaView>
   );
 };
 

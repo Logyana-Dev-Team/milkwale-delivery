@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,20 +6,65 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { TextInput } from "react-native-paper";
 import Separator from "../common/Separator";
 import Modal from "react-native-modal";
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
+import { Axiosapi } from "../../App";
 
-const OrderDetailsScreen = (props) => {
+const OrderDetailsScreen = ({ navigation, route }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [text, setText] = useState("");
+  const [addressData, setAddressData] = useState("");
+  const [userData, setUserData] = useState({});
 
+  const [data, setData] = useState(route.params.data);
+  // console.log("DATATATDAD", data.user, data.address);
+  useEffect(() => {
+    getaddress();
+    getUserdata();
+  }, []);
+
+  const getUserdata = () => {
+    Axiosapi.post(`/api/user/single-user`, {
+      uId: data.user,
+    })
+      .then((res) => {
+        setUserData(res.data.User);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getaddress = () => {
+    Axiosapi.post(`/api/address/getSingleAddress`, {
+      addressId: data.address,
+      userId: data.user,
+    })
+      .then((res) => {
+        setAddressData(res.data.getAddr);
+      })
+      .catch((err) => console.log(err));
+  };
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
+  
+  const completeOrder = (action) => {
+    // console.log(data._id,orderCredit);
+    Axiosapi.post(`/api/delboy/update-order`, {
+      action:action,
+      _id: data._id,
+    })
+      .then((res) => {
+        // console.log(res.data)
+      // Alert.alert("UPdated")
+        navigation.navigate("OrderDeliveredScreen");
+      })
+      .catch((err) => console.log(err));
+  };
   function ModalTester() {
     return (
       <Modal
@@ -37,14 +82,21 @@ const OrderDetailsScreen = (props) => {
           }}
         >
           <View>
-            <Text style={{ fontSize: 24, color: COLORS.white,fontWeight:'bold', margin: 10 }}>
+            <Text
+              style={{
+                fontSize: 24,
+                color: COLORS.white,
+                fontWeight: "bold",
+                margin: 10,
+              }}
+            >
               Reason for Cancellation
             </Text>
           </View>
           <View
             style={{
-              width: '90%',
-              height:'40%',
+              width: "90%",
+              height: "40%",
               //   borderBottomColor: "gray",
               tintColor: "black",
             //   height: SIZES.height,
@@ -70,11 +122,12 @@ const OrderDetailsScreen = (props) => {
               alignItems: "center",
               width: "50%",
               margin: 10,
-             
             }}
-            onPress={()=>{toggleModal()
-              props.navigation.navigate('OrderCancelled')
-              }}
+            onPress={() => {
+              toggleModal();
+              completeOrder("Cancelled")
+              navigation.navigate("OrderCancelled");
+            }}
           >
             <Text
               style={{
@@ -104,7 +157,7 @@ const OrderDetailsScreen = (props) => {
         }}
       >
         <View style={{ width: "10%" }}>
-          <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
               resizeMode="contain"
               style={{ height: 23, width: 23 }}
@@ -176,7 +229,7 @@ const OrderDetailsScreen = (props) => {
                   fontWeight: "bold",
                 }}
               >
-                Harshal Mahajan
+                {userData.name}
               </Text>
               <Text
                 style={{
@@ -187,7 +240,7 @@ const OrderDetailsScreen = (props) => {
                   fontWeight: "bold",
                 }}
               >
-                +91 9999977777
+                +91 {userData.phoneNumber}
               </Text>
             </View>
           </View>
@@ -206,39 +259,23 @@ const OrderDetailsScreen = (props) => {
                 ORDER :
               </Text>
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginHorizontal: 10,
-              }}
-            >
-              <Text style={{ fontSize: 13 }}>Milk</Text>
-              <Text style={{ fontSize: 13 }}> x 3</Text>
-            </View>
-            {/* <Separator /> */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginHorizontal: 10,
-              }}
-            >
-              <Text style={{ fontSize: 13 }}>Yoghurt</Text>
-              <Text style={{ fontSize: 13 }}> x 1</Text>
-            </View>
+            {data.allProduct.map((item, index) => {
+              return (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginHorizontal: 10,
+                  }}
+                >
+                  <Text style={{ fontSize: 13 }}>{item.productId.pName}</Text>
+                  <Text style={{ fontSize: 13 }}> x {item.quantity}</Text>
+                </View>
+              );
+            })}
+
             {/* <Separator /> */}
 
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginHorizontal: 10,
-              }}
-            >
-              <Text style={{ fontSize: 13 }}>Cheese</Text>
-              <Text style={{ fontSize: 13 }}>x 1</Text>
-            </View>
             <Separator />
             <View
               style={{
@@ -251,87 +288,56 @@ const OrderDetailsScreen = (props) => {
                 Total amount :
               </Text>
               <Text style={{ fontSize: 13, fontWeight: "bold" }}>
-                Rs. 80.00
-              </Text>
-            </View>
-            <View
-              style={{ marginHorizontal: 10, marginTop: 30, marginBottom: 10 }}
-            >
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 16,
-                  textDecorationLine: "underline",
-                }}
-              >
-                More Details :
+                Rs.{data.amount}
               </Text>
             </View>
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
                 marginHorizontal: 10,
+                marginTop: 30,
+                marginBottom: 10,
+                flexDirection: "column",
+                alignItems: "flex-start",
               }}
             >
-              <Text style={{ fontSize: 13, marginVertical: 5 }}>Order Id</Text>
-              <Text style={{ fontSize: 13, marginVertical: 5 }}>#998878</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginHorizontal: 10,
-              }}
-            >
-              <Text style={{ fontSize: 13, marginVertical: 5 }}>
-                Payment mode :{" "}
-              </Text>
-              <Text style={{ fontSize: 13, marginVertical: 5 }}>
-                Cash On Delivery
-              </Text>
-            </View>
-           
               <View
                 style={{
-                  marginHorizontal: 10,
-                  marginTop: 30,
-                  marginBottom: 10,
-                  flexDirection: "column",
+                  flexDirection: "row",
                   alignItems: "flex-start",
+                  justifyContent: "center",
                 }}
               >
-                <View
+                <Image
+                  source={icons.location}
+                  resizeMode="contain"
+                  style={{ height: 12, width: 12, margin: 3 }}
+                />
+                <Text
                   style={{
-                    flexDirection: "row",
-                    alignItems: "flex-start",
-                    justifyContent:'center'
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    textDecorationLine: "underline",
                   }}
                 >
-                  <Image
-                    source={icons.location}
-                    resizeMode="contain"
-                    style={{ height: 12, width: 12, margin: 3 }}
-                  />
+                  Deliver to :
+                </Text>
+              </View>
+
+              {addressData ? (
+                <View>
                   <Text
                     style={{
-                      fontWeight: "bold",
                       fontSize: 16,
-                      textDecorationLine: "underline",
+                      marginVertical: 5,
+                      marginHorizontal: 5,
                     }}
                   >
-                    Deliver to :
+                    {addressData.houseNo}, {addressData.areaName},{" "}
+                    {addressData.landmark}, {addressData.pincode}
                   </Text>
                 </View>
-
-                <View>
-                  <Text style={{ fontSize: 13, marginVertical: 5,marginHorizontal:5 }}>
-                    Lifeville, Pk chowk, BRT road, Pimple Saudagar, Pune,
-                    Maharashtra 411027
-                  </Text>
-                </View>
-              </View>
-   
+              ) : null}
+            </View>
           </View>
         </ScrollView>
 
@@ -351,12 +357,13 @@ const OrderDetailsScreen = (props) => {
             style={{
               backgroundColor: COLORS.primary,
               borderRadius: 10,
-              borderColor: COLORS.darkGray,
-              borderWidth: 0.5,
+              //   borderColor: COLORS.darkGray,
+              //   borderWidth: 0.5,
             }}
-            onPress={() => {
-              props.navigation.navigate("CheckoutScreen");
-            }}
+            onPress={()=>{
+              toggleModal()
+             
+             }}
           >
             <Text
               style={{
@@ -368,7 +375,6 @@ const OrderDetailsScreen = (props) => {
 
                 //   fontWeight: "bold",
               }}
-              onPress={toggleModal}
             >
               Cancel
             </Text>
@@ -376,14 +382,15 @@ const OrderDetailsScreen = (props) => {
           <TouchableOpacity
             style={{
               backgroundColor: COLORS.primary,
-              borderWidth: 0.5,
+              //   borderWidth: 0.5,
               borderRadius: 10,
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
             }}
             onPress={() => {
-              props.navigation.navigate("OrderDeliveredScreen");
+              completeOrder("Delivered");
+              
             }}
           >
             <View>
@@ -402,7 +409,12 @@ const OrderDetailsScreen = (props) => {
               <Image
                 source={icons.order}
                 resizeMode="contain"
-                style={{ width: 20, height: 20, tintColor: COLORS.darkGray,marginRight:10 }}
+                style={{
+                  width: 20,
+                  height: 20,
+                  tintColor: COLORS.darkGray,
+                  marginRight: 10,
+                }}
               />
             </View>
           </TouchableOpacity>

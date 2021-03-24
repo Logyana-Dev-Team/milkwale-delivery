@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { TextInput } from "react-native-paper";
 import Separator from "../common/Separator";
@@ -13,31 +14,69 @@ import Modal from "react-native-modal";
 import { icons, images, theme, COLORS, SIZES, FONTS } from "../constants";
 import { Axiosapi } from "../../App";
 
-const SubsDetailsScreen = (props) => {
+const SubsDetailsScreen = ({ navigation, route }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [text, setText] = useState("");
-  const [orderCredit, setOrderCredit] = useState("");
+  const [orderCredit, setOrderCredit] = useState(0);
   const [addressData, setAddressData] = useState("");
+  const [userData, setUserData] = useState({});
+  const [productDetails, setProductDetails] = useState({});
   const [data, setData] = useState(route.params.data);
-
+  // console.log(data);
   useEffect(() => {
-    Axiosapi.post(`/api/address/getSingleAddress`, {
-      addressId: data.address,
-      userId: data.user._id,
-    })
-      .then((res) => setAddressData(res.data.getAddr))
-      .catch((err) => console.log(err));
+    fetchSubscriptionData(data.subscriptionProduct.subId);
+    getaddress();
+    getUserdata();
   }, []);
 
+  const getUserdata = () => {
+    Axiosapi.post(`/api/user/single-user`, {
+      uId: data.user,
+    })
+      .then((res) => {
+        setUserData(res.data.User);
+      })
+      .catch((err) => console.log(err));
+  };
+  const getaddress = () => {
+    Axiosapi.post(`/api/address/getSingleAddress`, {
+      addressId: data.address,
+      userId: data.user,
+    })
+      .then((res) => {
+        setAddressData(res.data.getAddr);
+      })
+      .catch((err) => console.log(err));
+  };
+  const fetchSubscriptionData = (subId) => {
+    try {
+      Axiosapi.post(`/api/product/single-product`, {
+        pId: subId,
+      })
+        .then((res) => {
+          setProductDetails(res.data.Product);
+        })
+        .catch((err) => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const completeOrder = () => {
-    Axiosapi.post(`/api/order/update-order`, {
-     
+  const completeOrder = (action) => {
+    // console.log(data._id,orderCredit);
+    Axiosapi.post(`/api/delboy/update-credit`, {
+      action:action,
+      _id: data._id,
+      credit: orderCredit,
     })
-      .then((res) => console.log(res))
+      .then((res) => {
+        // console.log(res.data)
+      // Alert.alert("UPdated")
+        navigation.navigate("OrderDeliveredScreen");
+      })
       .catch((err) => console.log(err));
   };
 
@@ -101,7 +140,8 @@ const SubsDetailsScreen = (props) => {
             }}
             onPress={() => {
               toggleModal();
-              props.navigation.navigate("OrderCancelled");
+              completeOrder("Cancelled")
+              navigation.navigate("OrderCancelled");
             }}
           >
             <Text
@@ -132,7 +172,7 @@ const SubsDetailsScreen = (props) => {
         }}
       >
         <View style={{ width: "10%" }}>
-          <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
               resizeMode="contain"
               style={{ height: 23, width: 23 }}
@@ -204,7 +244,7 @@ const SubsDetailsScreen = (props) => {
                   fontWeight: "bold",
                 }}
               >
-                Harshal Mahajan
+                {userData.name || ""}
               </Text>
               <Text
                 style={{
@@ -215,7 +255,7 @@ const SubsDetailsScreen = (props) => {
                   fontWeight: "bold",
                 }}
               >
-                +91 9999977777
+                +91 {userData.phoneNumber || ""}
               </Text>
             </View>
           </View>
@@ -243,7 +283,7 @@ const SubsDetailsScreen = (props) => {
               }}
             >
               <Text style={{ fontSize: 16 }}>Product Name :</Text>
-              <Text style={{ fontSize: 16 }}>Milk</Text>
+              <Text style={{ fontSize: 16 }}>{productDetails.pName}</Text>
             </View>
             <View
               style={{
@@ -253,8 +293,19 @@ const SubsDetailsScreen = (props) => {
                 marginVertical: 10,
               }}
             >
-              <Text style={{ fontSize: 16 }}>Product Quantity :</Text>
-              <Text style={{ fontSize: 16 }}>2 Ltr.</Text>
+              <Text style={{ fontSize: 16 }}>Evening Time</Text>
+              <Text style={{ fontSize: 16 }}>{data.eveningTime}</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginHorizontal: 10,
+                marginVertical: 10,
+              }}
+            >
+              <Text style={{ fontSize: 16 }}>Morning Time</Text>
+              <Text style={{ fontSize: 16 }}>{data.morningTime}</Text>
             </View>
             <Separator />
             <View
@@ -268,24 +319,33 @@ const SubsDetailsScreen = (props) => {
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>
                 Credit Left :
               </Text>
-              <Text style={{ fontSize: 16, fontWeight: "bold" }}>24</Text>
+              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                {data.credits}
+              </Text>
             </View>
             <View
               style={{
-                width: "90%",
-                height: "10%",
                 //   borderBottomColor: "gray",
                 tintColor: "black",
                 //   height: SIZES.height,
-                margin: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                // margin: 10,
               }}
             >
-              <TextInput
-                //   label="Your answer..."
-                value={orderCredit}
-                onChangeText={(text) => setOrderCredit(text)}
-                selectionColor="red"
-              />
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                Enter Credit :
+              </Text>
+              <View style={{ width: "30%", height: "5%" }}>
+                <TextInput
+                  //   label="Your answer..."
+                  value={orderCredit}
+                  onChangeText={(text) => setOrderCredit(text)}
+                  selectionColor="red"
+                  keyboardType='number-pad'
+                />
+              </View>
             </View>
             <View
               style={{
@@ -356,7 +416,10 @@ const SubsDetailsScreen = (props) => {
               //   borderColor: COLORS.darkGray,
               //   borderWidth: 0.5,
             }}
-            onPress={toggleModal}
+            onPress={()=>{
+              toggleModal()
+             
+             }}
           >
             <Text
               style={{
@@ -382,8 +445,8 @@ const SubsDetailsScreen = (props) => {
               alignItems: "center",
             }}
             onPress={() => {
-              completeOrder();
-              props.navigation.navigate("OrderDeliveredScreen");
+              completeOrder("Delivered");
+              
             }}
           >
             <View>
@@ -420,7 +483,6 @@ const SubsDetailsScreen = (props) => {
     <SafeAreaView style={{ flex: 1 }}>
       {Header()}
       {ModalTester()}
-
       {Body()}
     </SafeAreaView>
   );
